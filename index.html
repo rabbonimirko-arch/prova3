@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>Apri Assistente</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;width:100%;height:100%;background:#000;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .wrap{
+      min-height:100vh;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      display:flex;align-items:center;justify-content:center;
+    }
+    .card{
+      width:min(520px, 94vw);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      padding:18px 16px;
+      background:rgba(255,255,255,.06);
+      box-shadow:0 14px 40px rgba(0,0,0,.45);
+      text-align:center;
+    }
+    h1{margin:6px 0 10px;font-size:22px;letter-spacing:.2px}
+    p{margin:0 0 14px;opacity:.9;line-height:1.35}
+    .btn{
+      appearance:none;border:0;cursor:pointer;
+      width:100%;
+      padding:14px 16px;
+      border-radius:14px;
+      font-size:16px;
+      font-weight:700;
+      background:#ffffff;color:#000;
+    }
+    .hint{margin-top:12px;font-size:13px;opacity:.75}
+    .small{margin-top:6px;font-size:12px;opacity:.65}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Assistente virtuale</h1>
+      <p>Premi il pulsante per aprire l’avatar a tutto schermo.<br/>Ti verrà chiesto di autorizzare <b>microfono</b> (e, se necessario, <b>fotocamera</b>).</p>
+
+      <button class="btn" id="open">Parla con l’assistente</button>
+
+      <div class="hint">Consiglio: apri in Chrome (Android) o Safari (iPhone) e disattiva “Risparmio dati”.</div>
+      <div class="small">Se l’audio non parte, tocca una volta lo schermo nell’avatar e riprova.</div>
+    </div>
+  </div>
+
+  <script>
+    // Apri ai.html nella stessa scheda (più affidabile su mobile per i permessi).
+    document.getElementById('open').addEventListener('click', () => {
+      window.location.href = './ai.html';
+    });
+  </script>
+</body>
+</html>

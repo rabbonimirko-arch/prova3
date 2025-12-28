@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>LiveAvatar Fullscreen</title>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{
+      width:100%;
+      height:100%;
+      background:#000;
+      overflow:hidden;
+      position:fixed;
+      inset:0;
+    }
+
+    /* Barra comandi sopra (opzionale) */
+    .topbar{
+      position:fixed;
+      top:0; left:0; right:0;
+      padding: max(10px, env(safe-area-inset-top)) 10px 10px;
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      z-index:10;
+      pointer-events:none; /* di default non blocca i tocchi sull'iframe */
+    }
+    .topbar button{
+      pointer-events:auto;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.45);
+      color:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:700;
+      font-size:14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    iframe{
+      position:fixed;
+      top:0; left:0;
+      width:100vw;
+      height:100vh;
+      border:none;
+      background:#000;
+      z-index:1;
+    }
+
+    /* Overlay iniziale: un tap per avviare (permessi + tentativo fullscreen) */
+    .gate{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      background:rgba(0,0,0,.55);
+      z-index:20;
+    }
+    .gate .panel{
+      width:min(560px, 94vw);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:18px;
+      padding:18px 16px;
+      background:rgba(255,255,255,.06);
+      text-align:center;
+      box-shadow:0 14px 40px rgba(0,0,0,.45);
+    }
+    .gate h2{margin:0 0 10px;font-size:20px}
+    .gate p{margin:0 0 14px;opacity:.9;line-height:1.35}
+    .gate .btn{
+      appearance:none;border:0;cursor:pointer;
+      width:100%;
+      padding:14px 16px;
+      border-radius:14px;
+      font-size:16px;
+      font-weight:800;
+      background:#ffffff;color:#000;
+    }
+    .gate .note{margin-top:10px;font-size:12px;opacity:.75}
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <button id="home" title="Torna alla Home">⬅ Home</button>
+    <button id="fs" title="Schermo intero">⛶ Fullscreen</button>
+  </div>
+
+  <iframe
+    id="avatar"
+    src="https://embed.liveavatar.com/v1/bd852dff-d57d-4ea4-bbcb-086a7837d695"
+    allow="microphone; camera; autoplay; fullscreen"
+    allowfullscreen
+    playsinline
+    title="LiveAvatar">
+  </iframe>
+
+  <div class="gate" id="gate">
+    <div class="panel">
+      <h2>Avvia l’assistente</h2>
+      <p>Tocca “Avvia” per aprire l’avatar a tutto schermo e abilitare i permessi (microfono / fotocamera).</p>
+      <button class="btn" id="start">Avvia</button>
+      <div class="note">Se Safari mostra l’icona “aA”, puoi scegliere “Richiedi sito desktop” solo se necessario.</div>
+    </div>
+  </div>
+
+  <script>
+    const gate = document.getElementById('gate');
+    const fsBtn = document.getElementById('fs');
+    const homeBtn = document.getElementById('home');
+
+    function goHome(){ window.location.href = './index.html'; }
+    homeBtn.addEventListener('click', goHome);
+
+    async function requestFullscreen(){
+      const el = document.documentElement;
+      try{
+        if (el.requestFullscreen) return await el.requestFullscreen();
+        if (el.webkitRequestFullscreen) return await el.webkitRequestFullscreen(); // iOS Safari (limited support)
+      }catch(e){}
+    }
+
+    // iOS/Android: alcuni browser richiedono un gesto utente prima di audio/permessi.
+    document.getElementById('start').addEventListener('click', async () => {
+      gate.style.display = 'none';
+      await requestFullscreen();
+      // Niente altro: i permessi li chiederà l’embed quando attivi microfono/camera.
+    });
+
+    fsBtn.addEventListener('click', requestFullscreen);
+
+    // Se l’utente torna indietro dal browser, evita pagina “vuota”
+    window.addEventListener('pageshow', () => {
+      // Non ri-mostriamo il gate automaticamente, ma puoi farlo se preferisci.
+    });
+  </script>
+</body>
+</html>
