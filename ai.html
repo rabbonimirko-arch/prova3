@@ -1,106 +1,174 @@
 <!DOCTYPE html>
 <html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport"
-        content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
-  <title>LiveAvatar Fullscreen (Zoom)</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>La Sciampista · Assistente AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        background: #f7efe9;
+        color: #1f1f1f;
+        font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
 
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{
-      width:100%;
-      height:100%;
-      overflow:hidden;
-      background:#000;
-      position:fixed;
-      inset:0;
-    }
+      body {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
 
-    /* 👇 Regola questi 3 valori */
-    :root{
-      --scale: 2;   /* aumenta se resta bianco sotto (es. 1.7 / 1.9) */
-      --shiftX: 0 px;   /* sposta a dx/sx se serve */
-      --shiftY: 30 px; /* sposta su/giù (negativo = su) */
-    }
+      header {
+        padding: 10px 14px;
+        font-size: .8rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #6a5b54;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        z-index: 1000;
+      }
 
-    .crop {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;         /* taglia l'eccesso */
-      background:#000;
-    }
+      header .brand {
+        color: #b47a72;
+        font-weight: 600;
+      }
 
-    iframe{
-      position:absolute;
-      top:50%;
-      left:50%;
-      width:100vw;
-      height:100vh;
-      border:0;
-      background:#000;
+      .app-wrapper {
+        position: relative;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
 
-      /* Zoom + centratura + shift */
-      transform:
-        translate(-50%,-50%)
-        translate(var(--shiftX), var(--shiftY))
-        scale(var(--scale));
+      .frame-9-16 {
+        position: relative;
+        width: 100vw;
+        max-width: 540px;
+        aspect-ratio: 9/16;
+        border-radius: 0;
+        overflow: hidden;
+        background: #000;
+      }
 
-      transform-origin: center center;
-    }
+      #heygen-streaming-embed {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        opacity: 0;
+        visibility: hidden;
+      }
 
-    /* Barra minimale sopra */
-    .topbar{
-      position:fixed;
-      top:0; left:0; right:0;
-      padding: max(10px, env(safe-area-inset-top)) 10px 10px;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      z-index:10;
-      pointer-events:none;
-    }
-    .topbar button{
-      pointer-events:auto;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(0,0,0,.45);
-      color:#fff;
-      border-radius:12px;
-      padding:10px 12px;
-      font-weight:800;
-      font-size:14px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-  </style>
-</head>
+      #heygen-streaming-embed.show {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity .3s ease-out;
+      }
 
-<body>
-  <div class="topbar">
-    <button onclick="location.href='./index.html'">⬅ Home</button>
-    <button id="fs">⛶ Fullscreen</button>
-  </div>
+      #heygen-streaming-container, 
+      #heygen-streaming-container iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border: 0 !important;
+      }
 
-  <div class="crop">
-    <iframe
-      src="https://embed.liveavatar.com/v1/bd852dff-d57d-4ea4-bbcb-086a7837d695"
-      allow="microphone; camera; autoplay; fullscreen"
-      allowfullscreen
-      playsinline
-      title="LiveAvatar">
-    </iframe>
-  </div>
+      .hint-mobile {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: .75rem;
+        color: #fff;
+        background: rgba(0,0,0,0.35);
+        padding: 6px;
+        border-radius: 12px;
+        margin: 0 10px;
+      }
+    </style>
+  </head>
 
-  <script>
-    async function requestFullscreen(){
-      const el = document.documentElement;
-      try{
-        if (el.requestFullscreen) return await el.requestFullscreen();
-        if (el.webkitRequestFullscreen) return await el.webkitRequestFullscreen();
-      }catch(e){}
-    }
-    document.getElementById('fs').addEventListener('click', requestFullscreen);
-  </script>
-</body>
+  <body>
+    <header>
+      <div class="brand">La Sciampista · AI</div>
+      <div class="hint">Consulente capelli naturale</div>
+    </header>
+
+    <div class="app-wrapper">
+      <div class="frame-9-16">
+        <div class="hint-mobile">
+          Tocca l’avatar per iniziare a parlare · Consenti microfono
+        </div>
+      </div>
+    </div>
+
+    <!-- Script HeyGen a tutto schermo -->
+    <script>
+      !function(window){
+        const host="https://app.liveavatar.com/",
+        url=host+"/guest/streaming-embed?share=https://embed.liveavatar.com/v1/bd852dff-d57d-4ea4-bbcb-086a7837d695,
+        clientWidth=document.body.clientWidth,
+        wrapDiv=document.createElement("div");
+        wrapDiv.id="heygen-streaming-embed";
+        const container=document.createElement("div");
+        container.id="heygen-streaming-container";
+        const stylesheet=document.createElement("style");
+        stylesheet.innerHTML=`
+          #heygen-streaming-embed {
+            z-index: 9999;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            border: 0;
+            overflow: hidden;
+            transition: all 0.1s linear;
+          }
+          #heygen-streaming-container {
+            width: 100%;
+            height: 100%;
+          }
+          #heygen-streaming-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+          }
+        `;
+        const iframe=document.createElement("iframe");
+        iframe.allowFullscreen=!1;
+        iframe.title="La Sciampista AI";
+        iframe.role="dialog";
+        iframe.allow="microphone";
+        iframe.src=url;
+        let visible=!1,initial=!1;
+        window.addEventListener("message",(e=>{
+          e.origin===host&&e.data&&e.data.type&&"streaming-embed"===e.data.type&&(
+            "init"===e.data.action?(initial=!0,wrapDiv.classList.toggle("show",initial)):
+            "show"===e.data.action?(visible=!0,wrapDiv.classList.toggle("expand",visible)):
+            "hide"===e.data.action&&(visible=!1,wrapDiv.classList.toggle("expand",visible))
+          )
+        }));
+        container.appendChild(iframe);
+        wrapDiv.appendChild(stylesheet);
+        wrapDiv.appendChild(container);
+        const frame=document.querySelector('.frame-9-16');
+        if(frame){frame.appendChild(wrapDiv);}
+      }(globalThis);
+    </script>
+  </body>
 </html>
